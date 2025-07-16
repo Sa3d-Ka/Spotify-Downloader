@@ -1,1 +1,19 @@
 @import "tailwindcss";
+
+@theme {
+    --color-primary: #1db954;
+    --color-dark: #121212;
+    --color-darkMedium: #212121;
+    --color-darkLight: #535353;
+    --color-grayMuted: #b3b3b3;
+}
+
+.active hr {
+  @apply block;
+}
+
+@media (max-width:740px) {
+  .active li{
+    @apply text-white bg-primary
+  }
+}
