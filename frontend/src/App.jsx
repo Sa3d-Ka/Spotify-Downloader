@@ -5,10 +5,12 @@ import PlaylistPage from "./pages/PlaylistPage";
 import DownloadPage from "./pages/DownloadPage";
 import Navbar from "./components/Navbar";
 import HowItWorks from "./pages/HowItWorks";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
     <div className="min-h-screen bg-darkMedium text-white px-[10px] py-[20px] md:px-[140px] md:py-[30px]">
+        <ToastContainer theme="dark" />
         <Navbar />
         <Routes>
           <Route path="/" element={<HomePage />} />
