@@ -15,7 +15,7 @@ const UrlMode = () => {
         <input
           type="text"
           id="email"
-          class="bg-darkMedium border border-darkLight text-white text-sm rounded-s focus:ring-primary focus:border-primary block w-full p-2.5"
+          class="bg-darkMedium border border-darkLight text-white text-md rounded-s focus:ring-primary focus:border-primary block w-full p-2.5"
           placeholder="https://open.spotify.com/..."
           required
         />

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Link, NavLink, useNavigate } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import assets from "../assets/assets";
 import { MdMenu } from "react-icons/md";
 import { IoMdClose } from "react-icons/io";
@@ -28,7 +28,7 @@ const Navbar = () => {
       <button className="hidden bg-[#1db954] text-white py-3 px-4 rounded-full cursor-pointer md:block">
         Create an Account
       </button>
-      <div>
+      <div className="md:hidden">
         <MdMenu
           size={40}
           className="md:hidden"
