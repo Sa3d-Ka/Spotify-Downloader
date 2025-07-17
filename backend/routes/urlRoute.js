@@ -1,5 +1,5 @@
 import express from 'express'
-import fetchPlaylistFromUrl from '../controllers/urlController'
+import fetchPlaylistFromUrl from '../controllers/urlController.js'
 
 
 const urlRoute = express.Router()

@@ -1,7 +1,7 @@
 import express from 'express'
 import cors from 'cors'
 import 'dotenv/config'
-import urlRoute from './routes/urlRoute';
+import urlRoute from './routes/urlRoute.js';
 
 
 const app = express()
