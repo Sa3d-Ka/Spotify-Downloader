@@ -8,7 +8,7 @@ const StepTracker = ({ currentStep = 1 }) => {
   ];
 
   return (
-    <div className="flex justify-center items-center gap-3 py-6">
+    <div className="flex justify-center items-center gap-3 py-6 mb-8">
       {steps.map((step, index) => {
         const active = currentStep === index + 1;
         return (
