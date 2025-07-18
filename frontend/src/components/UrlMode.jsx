@@ -8,7 +8,7 @@ import { usePlaylistContext } from "../context/PlaylistContext";
 
 const UrlMode = () => {
   const [url, setUrl] = useState("");
-  const { setPlaylist } = usePlaylistContext();
+  const { setPlaylists } = usePlaylistContext();
   const navigate = useNavigate();
 
   const handelFetchPlayList = async () => {
@@ -23,7 +23,7 @@ const UrlMode = () => {
         { url }
       );
 
-      setPlaylist(res.data);
+      setPlaylists(res.data);
       navigate("/playlist");
     } catch (error) {
       toast.error("Failed to fetch playlist.");

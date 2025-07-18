@@ -63,7 +63,7 @@ const fetchPlaylistFromUrl  = async (req, res) => {
 
     const playlist = playlistRes.data;
 
-    const responseData = {
+    const responseData = [{
       id: playlist.id,
       name: playlist.name,
       image: playlist.images[0]?.url || null,
@@ -74,7 +74,7 @@ const fetchPlaylistFromUrl  = async (req, res) => {
         duration_ms: item.track.duration_ms,
         image: item.track.album.images[0]?.url || null,
       })),
-    };
+    }];
 
     return res.json(responseData);
   } catch (err) {
