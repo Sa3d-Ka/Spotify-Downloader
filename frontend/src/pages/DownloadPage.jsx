@@ -18,8 +18,6 @@ const DownloadPage = () => {
     return null;
   }
 
-  console.log(tracks);
-
   return (
     <div>
       <StepTracker currentStep={3} />
