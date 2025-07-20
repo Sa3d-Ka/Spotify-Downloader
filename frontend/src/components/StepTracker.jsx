@@ -33,7 +33,7 @@ const StepTracker = ({ currentStep = 1 }) => {
             </div>
             {index < steps.length - 1 && (
               <div
-                className={`w-50 h-[3px] bg-gray-700 ${
+                className={`w-20 md:w-50 h-[3px] bg-gray-700 ${
                   currentStep > index + 1 ? "bg-green-500" : "bg-gray-700"
                 }`}
               ></div>
