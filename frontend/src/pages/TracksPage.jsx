@@ -1,6 +1,6 @@
-import React, { useMemo, useState } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import StepTracker from "../components/StepTracker";
-import { useParams } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePlaylistContext } from "../context/PlaylistContext";
 import { IoSearch } from "react-icons/io5";
 import TrackRow from "../components/TrackRow";
@@ -8,22 +8,34 @@ import { MdOutlineFileDownload } from "react-icons/md";
 
 const TracksPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-
-  const { id } = useParams();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const id = location.state?.id;
   const { playlists } = usePlaylistContext();
+
   const playlist = playlists.find((pl) => pl.id === id);
-  const tracks = playlist.tracks;
+  const tracks = playlist?.tracks || [];
 
   const filteredTracks = useMemo(() => {
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword === "") return tracks;
-
     return tracks.filter((track) =>
       `${track.title} ${track.artist} ${track.album}`
         .toLowerCase()
         .includes(keyword)
     );
   }, [tracks, searchKeyword]);
+
+  useEffect(() => {
+    if (!playlists.length || !id || !playlist) {
+      navigate("/");
+    }
+  }, [playlists, id, playlist, navigate]);
+
+  // Return fallback UI if playlist isn't loaded yet
+  if (!playlist) {
+    return null;
+  }
 
   return (
     <div>
@@ -32,11 +44,13 @@ const TracksPage = () => {
         <div className="flex justify-between">
           <h2 className="font-bold text-2xl">{playlist.name}</h2>
           <p className="text-gray-400 text-sm">
-            {playlist.tracks.length > 1
-              ? `${playlist.tracks.length} Tracks`
-              : `${playlist.tracks.length} Track`}
+            {tracks.length > 1
+              ? `${tracks.length} Tracks`
+              : `${tracks.length} Track`}
           </p>
         </div>
+
+        {/* Search */}
         <div className="relative">
           <input
             value={searchKeyword}
@@ -50,25 +64,17 @@ const TracksPage = () => {
             className="absolute top-1/2 left-3 transform -translate-y-1/2 text-gray-400"
           />
         </div>
+
+        {/* Track Table */}
         <div className="overflow-x-auto rounded-md shadow">
           <table className="table-auto bg-dark min-w-full text-sm text-left text-gray-300">
             <thead className="text-gray-400 uppercase text-xs rounded border-b border-[#535353]">
               <tr>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  #
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Title
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Album
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Duration
-                </th>
-                <th scope="col" className="px-4 py-3 font-medium">
-                  Action
-                </th>
+                <th className="px-4 py-3 font-medium">#</th>
+                <th className="px-4 py-3 font-medium">Title</th>
+                <th className="px-4 py-3 font-medium">Album</th>
+                <th className="px-4 py-3 font-medium">Duration</th>
+                <th className="px-4 py-3 font-medium">Action</th>
               </tr>
             </thead>
             <tbody>
@@ -90,6 +96,8 @@ const TracksPage = () => {
             </tbody>
           </table>
         </div>
+
+        {/* Download All Button */}
         <div className="flex justify-center">
           <button className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer">
             <MdOutlineFileDownload size={20} />

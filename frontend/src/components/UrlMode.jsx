@@ -24,6 +24,10 @@ const UrlMode = () => {
       );
 
       setPlaylists(res.data);
+
+      localStorage.setItem("playlists", JSON.stringify(res.data)); // store playlists
+      localStorage.setItem("hasActiveSession", "true"); // mark session as active
+
       navigate("/playlist");
     } catch (error) {
       toast.error("Failed to fetch playlist.");

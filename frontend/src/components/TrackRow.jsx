@@ -1,11 +1,19 @@
 import React from "react";
 import { MdOutlineFileDownload } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
 
 const TrackRow = ({ index, track }) => {
+
+    const navigate = useNavigate()
+
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
     const seconds = Math.floor((ms % 60000) / 1000);
     return `${minutes}:${seconds < 10 ? "0" : ""}${seconds}`;
+  };
+
+  const handleDownload = () => {
+    navigate("/download", { state: {track} });
   };
 
   return (
@@ -23,7 +31,7 @@ const TrackRow = ({ index, track }) => {
       <td className="px-4 py-3">{track.album}</td>
       <td className="px-4 py-3">{formatDuration(track.duration_ms)}</td>
       <td>
-        <button className="flex items-center gap-2 bg-primary py-2 px-4 rounded-md cursor-pointer">
+        <button onClick={handleDownload} className="flex items-center gap-2 bg-primary py-2 px-4 rounded-md cursor-pointer">
           <span>Download</span> <MdOutlineFileDownload size={20} />
         </button>
       </td>
