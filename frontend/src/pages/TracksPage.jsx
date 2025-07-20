@@ -37,6 +37,10 @@ const TracksPage = () => {
     return null;
   }
 
+  const handleDownload = () => {
+    navigate("/download", { state: { tracks} });
+  };
+
   return (
     <div>
       <StepTracker currentStep={2} />
@@ -99,7 +103,7 @@ const TracksPage = () => {
 
         {/* Download All Button */}
         <div className="flex justify-center">
-          <button className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer">
+          <button onClick={handleDownload} className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer">
             <MdOutlineFileDownload size={20} />
             <span>Download All Tracks</span>
           </button>

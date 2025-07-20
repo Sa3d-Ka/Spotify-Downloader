@@ -4,7 +4,7 @@ import { useNavigate } from "react-router-dom";
 
 const TrackRow = ({ index, track }) => {
 
-    const navigate = useNavigate()
+  const navigate = useNavigate()
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -13,7 +13,7 @@ const TrackRow = ({ index, track }) => {
   };
 
   const handleDownload = () => {
-    navigate("/download", { state: {track} });
+    navigate("/download", { state: { tracks: [track] } })
   };
 
   return (
