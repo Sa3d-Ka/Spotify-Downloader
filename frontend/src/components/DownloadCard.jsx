@@ -1,6 +1,6 @@
 import React from "react";
 
-const DownloadCard = ({ track }) => {
+const DownloadCard = ({ track, percent = 0, completed = false }) => {
   return (
     <div className="bg-dark py-4 px-4 rounded-md">
       <div className="flex justify-between items-center mb-4">
@@ -15,16 +15,17 @@ const DownloadCard = ({ track }) => {
             <span className="text-sm text-gray-400">{track.artist}</span>
           </div>
         </div>
-        <p>64%</p>
+        <p>{completed ? "Done" : `${percent || 0}%`}</p>
       </div>
       <div className="w-full h-3 rounded-full bg-darkLight ">
         <div
-          style={{ width: "10%" }}
+          style={{ width: `${percent || 0}%` }}
           className="h-full bg-primary rounded-full transition-all duration-300"
         ></div>
       </div>
     </div>
   );
 };
+
 
 export default DownloadCard;

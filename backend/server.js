@@ -13,7 +13,8 @@ const port = process.env.PORT || 4000;
 const server = http.createServer(app);
 const io = new Server(server, {
   cors: {
-    origin: '*'
+    origin: 'http://localhost:5173',
+    methods: ['GET', 'POST']
   }
 });
 
@@ -29,9 +30,12 @@ app.use("/api/playlist", urlRoute);
 app.use("/api/download", downloadRoute(io));
 
 // WebSocket
-io.on("connection", (socket) => {
-  console.log("✅ WebSocket Connected:", socket.id);
-  downloadSocketHandler(socket);
+io.on('connection', (socket) => {
+  console.log('A user connected:', socket.id);
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected:', socket.id);
+  });
 });
 
-app.listen(port, () => console.log("Server Started http://localhost:" + port));
+server.listen(port, () => console.log("Server Started http://localhost:" + port));
