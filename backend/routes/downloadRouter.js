@@ -1,11 +1,10 @@
-import express from 'express';
-import { downloadTrack } from '../controllers/downloadController.js';
+// routes/streamRoute.js
+import express from "express";
+import { trackDownload } from "../controllers/downloadController.js";
 
-const router = express.Router();
 
-const downloadRoute =  (io) => {
-  router.post('/', (req, res) => downloadTrack(req, res, io));
-  return router;
-};
+const downloadRouter = express.Router();
 
-export default downloadRoute
+router.get("/", trackDownload);
+
+export default downloadRouter;
