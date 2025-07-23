@@ -84,7 +84,7 @@ npm run dev
 3. **Download:**  
    Select tracks and download as MP3 or ZIP.
 
-**Screenshots:**
+## Screenshots
 
 ![Login Mode](frontend/public/img1.png)
 ![URL Mode](frontend/public/img2.png)
