@@ -103,31 +103,6 @@ npm run dev
 
 ---
 
-## Tests
-
-To run tests:
-
-```bash
-cd backend
-npm test
-
-cd ../frontend
-npm test
-```
-
-Test coverage reports are generated in `/coverage`.
-
----
-
-## Contributing
-
-- Follow [Conventional Commits](https://www.conventionalcommits.org/)
-- Use 2-space indentation
-- Submit pull requests to `main` branch
-- Run tests before submitting changes
-
----
-
 ## License
 
 MIT License. See [LICENSE](LICENSE) for details.
