@@ -137,7 +137,11 @@ const TracksPage = () => {
             disabled={loading}
             className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer"
           >
-            {loading ? <ImSpinner8 className="animate-spin"/> : <MdOutlineFileDownload size={20} />}
+            {loading ? (
+              <ImSpinner8 className="animate-spin" />
+            ) : (
+              <MdOutlineFileDownload size={20} />
+            )}
             <span>{loading ? "Downloading..." : "Download All Tracks"}</span>
           </button>
         </div>

@@ -1,9 +1,8 @@
-import express from 'express'
-import fetchPlaylistFromUrl from '../controllers/urlController.js'
+import express from "express";
+import fetchPlaylistFromUrl from "../controllers/urlController.js";
 
+const urlRoute = express.Router();
 
-const urlRoute = express.Router()
+urlRoute.post("/url", fetchPlaylistFromUrl);
 
-urlRoute.post('/url', fetchPlaylistFromUrl)
-
-export default urlRoute
+export default urlRoute;
