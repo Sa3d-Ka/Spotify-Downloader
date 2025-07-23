@@ -16,6 +16,10 @@
   <img src="https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?logo=tailwindcss" alt="TailwindCSS"/>
 </p>
 
+## Demo
+
+[Live Demo](https://spotify-downloader-demo.vercel.app/)
+
 ## Description
 
 Spotify-Downloader is a web application that enables users to download tracks from Spotify playlists as MP3 files. You can log in with your Spotify account to access your playlists, or paste a public playlist URL. The app fetches playlist tracks and provides easy download options, including real-time progress updates.
@@ -38,8 +42,7 @@ Makes it easy to download Spotify playlist tracks for offline use, solving the h
 - [Usage](#usage)
 - [Configuration](#configuration)
 - [API Reference](#api-reference)
-- [Tests](#tests)
-- [Contributing](#contributing)
+- [Screenshots](#screenshots)
 - [License](#license)
 
 ---
