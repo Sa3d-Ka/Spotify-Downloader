@@ -4,11 +4,14 @@ import { BrowserRouter } from "react-router-dom";
 import "./index.css";
 import App from "./App.jsx";
 import { PlaylistProvider } from "./context/PlaylistContext.jsx";
+import { TracksProvider } from "./context/TracksContext.jsx";
 
 createRoot(document.getElementById("root")).render(
   <BrowserRouter>
     <PlaylistProvider>
-      <App />
+      <TracksProvider>
+        <App />
+      </TracksProvider>
     </PlaylistProvider>
   </BrowserRouter>
 );

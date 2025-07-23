@@ -1,6 +1,8 @@
 import React from "react";
 
 const DownloadCard = ({ track, percent = 0, completed = false }) => {
+  console.log(percent);
+  
   return (
     <div className="bg-dark py-4 px-4 rounded-md">
       <div className="flex justify-between items-center mb-4">

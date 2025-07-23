@@ -5,9 +5,11 @@ import { usePlaylistContext } from "../context/PlaylistContext";
 import { IoSearch } from "react-icons/io5";
 import TrackRow from "../components/TrackRow";
 import { MdOutlineFileDownload } from "react-icons/md";
+import { useTracks } from "../context/TracksContext";
 
 const TracksPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
+  const { setTracks } = useTracks();
   const navigate = useNavigate();
   const location = useLocation();
   const id = location.state?.id;
@@ -38,7 +40,8 @@ const TracksPage = () => {
   }
 
   const handleDownload = () => {
-    navigate("/download", { state: { tracks} });
+    setTracks(tracks)
+    navigate("/download");
   };
 
   return (

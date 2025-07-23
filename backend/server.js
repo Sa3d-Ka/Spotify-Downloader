@@ -4,7 +4,7 @@ import { Server } from "socket.io";
 import cors from "cors";
 import "dotenv/config";
 import urlRoute from "./routes/urlRoute.js";
-import downloadRouter from "./routes/downloadRouter.js";
+import streamRoute from "./routes/streamRoute.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -23,7 +23,7 @@ app.get("/", (req, res) => {
 
 // ✅ Use routes
 app.use("/api/playlist", urlRoute);
-app.use("/api/download", downloadRouter);
+app.use("/api/stream", streamRoute(io));
 
 server.listen(port, () =>
   console.log("Server Started http://localhost:" + port)

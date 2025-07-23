@@ -1,10 +1,12 @@
 import React from "react";
 import { MdOutlineFileDownload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
+import { useTracks } from "../context/TracksContext";
 
 const TrackRow = ({ index, track }) => {
 
   const navigate = useNavigate()
+  const { setTracks } = useTracks();
 
   const formatDuration = (ms) => {
     const minutes = Math.floor(ms / 60000);
@@ -13,7 +15,8 @@ const TrackRow = ({ index, track }) => {
   };
 
   const handleDownload = () => {
-    navigate("/download", { state: { tracks: [track] } })
+    setTracks([track])
+    navigate("/download")
   };
 
   return (
