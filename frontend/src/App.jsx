@@ -7,13 +7,14 @@ import Navbar from "./components/Navbar";
 import HowItWorks from "./pages/HowItWorks";
 import { ToastContainer } from "react-toastify";
 import TracksPage from "./pages/TracksPage";
+import Callback from "./pages/Callback";
 
 const App = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
     const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("access_token");
+    const token = urlParams.get("token");
 
     if (token) {
       localStorage.setItem("spotify_token", token);
@@ -22,10 +23,10 @@ const App = () => {
       window.history.replaceState({}, document.title, "/");
 
       // Optionally: navigate to your playlist page
-      navigate("/playlists");
+      navigate("/callback");
     }
   }, []);
-  
+
   return (
     <div className="min-h-screen bg-darkMedium text-white px-[10px] py-[20px] md:px-[140px] md:py-[30px]">
       <ToastContainer theme="dark" />
@@ -36,6 +37,7 @@ const App = () => {
         <Route path="/playlist" element={<PlaylistPage />} />
         <Route path="/tracks" element={<TracksPage />} />
         <Route path="/download" element={<DownloadPage />} />
+        <Route path="/callback" element={<Callback />} />
       </Routes>
     </div>
   );

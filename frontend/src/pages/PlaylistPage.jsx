@@ -11,6 +11,9 @@ const PlaylistPage = () => {
   const { playlists } = usePlaylistContext();
   const navigate = useNavigate();
 
+  console.log(playlists);
+  
+
   useEffect(() => {
     if (!playlists || playlists.length === 0) {
       navigate("/");

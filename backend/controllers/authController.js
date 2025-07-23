@@ -30,7 +30,7 @@ export const exchangeSpotifyCode = async (req, res) => {
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
-    params.append("redirect_uri", process.env.SPOTIFY_REDIRECT_URI);
+    params.append("redirect_uri", REDIRECT_URI);
 
     const authToken = Buffer.from(`${CLIENT_ID}:${CLIENT_SECRET}`).toString(
       "base64"
@@ -49,68 +49,67 @@ export const exchangeSpotifyCode = async (req, res) => {
 
     const { access_token, refresh_token } = tokenRes.data;
 
-    const playlists = await fetchPlaylistWithTracks(access_token);
-    console.log(playlists);
+    res.redirect(`${FRONTEND_URL}?token=${access_token}`);
 
-    return res.json({ playlists });
+    // const playlists = await fetchPlaylistWithTracks(access_token);
+
+    // return res.json({ access_token, refresh_token, playlists });
   } catch (err) {
-    console.error("Token error", err.response?.data || err.message);
+    console.error("Token exchange error:", err.response?.data || err.message);
     res.status(500).send("Authentication failed");
   }
 };
 
-async function fetchPlaylistWithTracks(token) {
-  try {
-    // 1. First fetch the playlists
-    const playlistsRes = await axios.get(
-      "https://api.spotify.com/v1/me/playlists",
-      {
-        headers: { Authorization: `Bearer ${token}` },
-        params: { limit: 50 }, // Limit number of playlists to fetch
-      }
-    );
+// const fetchPlaylistWithTracks = async (token) => {
+//   try {
+//     const playlistsRes = await axios.get(
+//       "https://api.spotify.com/v1/me/playlists",
+//       {
+//         headers: { Authorization: `Bearer ${token}` },
+//         params: { limit: 50 },
+//       }
+//     );
 
-    // 2. Process each playlist to get tracks
-    const playlistsWithTracks = await Promise.all(
-      playlistsRes.data.items.map(async (pl) => {
-        try {
-          // 3. Fetch tracks for this specific playlist
-          const tracksRes = await axios.get(pl.tracks.href, {
-            headers: { Authorization: `Bearer ${token}` },
-            params: { limit: 20 }, // Limit number of tracks per playlist
-          });
+//     const playlistsWithTracks = await Promise.all(
+//       playlistsRes.data.items.map(async (playlist) => {
+//         try {
+//           const tracksRes = await axios.get(playlist.tracks.href, {
+//             headers: { Authorization: `Bearer ${token}` },
+//             params: { limit: 20 },
+//           });
 
-          return {
-            id: pl.id,
-            name: pl.name,
-            image: pl.images[0]?.url || null,
-            tracks: tracksRes.data.items.map((item) => ({
-              id: item.track?.id,
-              name: item.track?.name,
-              artists: item.track?.artists?.map((artist) => artist.name) || [],
-              duration_ms: item.track?.duration_ms,
-              album: item.track?.album?.name,
-            })),
-          };
-        } catch (trackError) {
-          console.error(
-            `Failed to fetch tracks for playlist ${pl.id}:`,
-            trackError.message
-          );
-          return {
-            id: pl.id,
-            name: pl.name,
-            image: pl.images[0]?.url || null,
-            tracks: [],
-            error: "Failed to load tracks",
-          };
-        }
-      })
-    );
+//           return {
+//             id: playlist.id,
+//             name: playlist.name,
+//             image: playlist.images[0]?.url || null,
+//             tracks: tracksRes.data.items.map((item) => ({
+//               id: item.track?.id,
+//               name: item.track?.name,
+//               artists: item.track?.artists?.map((a) => a.name) || [],
+//               album: item.track?.album?.name,
+//               duration_ms: item.track?.duration_ms,
+//               image: item.track?.album?.images?.[0]?.url || null,
+//             })),
+//           };
+//         } catch (trackErr) {
+//           console.error(
+//             `Failed to get tracks for playlist ${playlist.id}:`,
+//             trackErr.message
+//           );
+//           return {
+//             id: playlist.id,
+//             name: playlist.name,
+//             image: playlist.images[0]?.url || null,
+//             tracks: [],
+//             error: "Could not fetch tracks",
+//           };
+//         }
+//       })
+//     );
 
-    return playlistsWithTracks;
-  } catch (err) {
-    console.error("Spotify API error:", err.response?.data || err.message);
-    throw err;
-  }
-}
+//     return playlistsWithTracks;
+//   } catch (err) {
+//     console.error("Spotify API error:", err.response?.data || err.message);
+//     throw err;
+//   }
+// };

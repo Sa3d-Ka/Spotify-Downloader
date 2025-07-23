@@ -11,7 +11,7 @@ const PlaylistCard = ({ playlist }) => {
       <img
         src={playlist.image}
         alt="Playlist Image"
-        className="w-full h-auto rounded object-cover"
+        className="w-full h-full rounded object-cover"
       />
       <div>
         <p className="font-bold text-lg">{playlist.name}</p>
