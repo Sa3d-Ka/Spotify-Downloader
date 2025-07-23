@@ -2,6 +2,18 @@
 
 ![Logo](frontend/public/logo.svg)
 
+<!-- Version Badges -->
+![Node.js](https://img.shields.io/badge/node.js-18%2B-green)
+![npm](https://img.shields.io/badge/npm-9%2B-blue)
+
+<!-- Technology Badges -->
+![Express](https://img.shields.io/badge/Express-4.x-lightgrey?logo=express)
+![Socket.io](https://img.shields.io/badge/Socket.io-4.x-lightgrey?logo=socket.io)
+![React](https://img.shields.io/badge/React-18.x-blue?logo=react)
+![Vite](https://img.shields.io/badge/Vite-4.x-purple?logo=vite)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-3.x-06B6D4?logo=tailwindcss)
+
+<!-- Existing badges -->
 ![Build Status](https://img.shields.io/github/workflow/status/yourusername/Spotify-Downloader/CI)
 ![Test Coverage](https://img.shields.io/codecov/c/github/yourusername/Spotify-Downloader)
 ![Version](https://img.shields.io/github/package-json/v/yourusername/Spotify-Downloader)
