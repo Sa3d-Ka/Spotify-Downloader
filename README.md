@@ -13,6 +13,7 @@
 Spotify-Downloader is a web application that enables users to download tracks from Spotify playlists as MP3 files. You can log in with your Spotify account to access your playlists, or paste a public playlist URL. The app fetches playlist tracks and provides easy download options, including real-time progress updates.
 
 **Key Features:**
+
 - Login with Spotify or paste playlist URL
 - Browse and select tracks
 - Download tracks as MP3 or ZIP
@@ -82,14 +83,15 @@ npm run dev
 ## Configuration
 
 - **Environment Variables:**
-  - `backend/.env`:  
+
+  - `backend/.env`:
     - `SPOTIFY_CLIENT_ID`
     - `SPOTIFY_CLIENT_SECRET`
     - `FRONTEND_URL`
-  - `frontend/.env`:  
+  - `frontend/.env`:
     - `VITE_BACKEND_URL`
 
-- **Config Files:**  
+- **Config Files:**
   - `backend/.env`
   - `frontend/.env`
 
@@ -97,9 +99,17 @@ npm run dev
 
 ## API Reference
 
-- `GET /api/playlists` - Fetch user playlists
-- `POST /api/download` - Download selected tracks
-- `GET /api/progress` - Get download progress
+- `GET /api/playlist`  
+  Fetch playlist information from a Spotify URL.
+
+- `GET /api/stream`  
+  Stream and download individual tracks (uses Socket.io for progress).
+
+- `POST /api/download-zip`  
+  Download selected tracks as a ZIP file.
+
+- `POST /api/auth`  
+  Spotify authentication (login, callback, etc.).
 
 ---
 
