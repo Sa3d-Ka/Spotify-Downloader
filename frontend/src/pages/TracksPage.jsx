@@ -46,7 +46,7 @@ const TracksPage = () => {
     try {
       setLoading(true); // start loading
       const response = await axios.post(
-        "http://localhost:4000/api/download-zip",
+        `${import.meta.env.VITE_BACKEND_URL}/api/download-zip`,
         { tracks },
         {
           responseType: "blob",

@@ -1,6 +1,5 @@
 import ytdl from "@distube/ytdl-core";
 import ytsr from "@distube/ytsr";
-import { sanitize } from "../utils/sanitize.js";
 
 // Accept socket instance from router
 export const trackDownload = (io) => async (req, res) => {

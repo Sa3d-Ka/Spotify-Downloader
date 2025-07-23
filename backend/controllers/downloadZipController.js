@@ -1,7 +1,6 @@
 import ytdl from '@distube/ytdl-core';
 import ytsr from "@distube/ytsr";
 import archiver from "archiver";
-import { sanitize } from "../utils/sanitize.js";
 
 export const downloadZip = async (req, res) => {
   const { tracks } = req.body;
@@ -21,7 +20,7 @@ export const downloadZip = async (req, res) => {
       const search = await ytsr(`${title} ${artist}`, { limit: 1 });
       const video = search.items[0];
 
-      const fileName = sanitize(`${title} - ${artist}.mp3`);
+      const fileName = `${title} - ${artist}.mp3`;
       const stream = ytdl(video.url, {
         filter: "audioonly",
         quality: "highestaudio",

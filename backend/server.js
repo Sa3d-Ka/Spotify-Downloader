@@ -12,10 +12,13 @@ const port = process.env.PORT || 4000;
 const server = http.createServer(app);
 
 const io = new Server(server, {
-  cors: { origin: "http://localhost:5173" },
+  cors: { 
+    origin: process.env.VITE_FRONTEND_URL || 'http://localhost:5173',
+    credentials: true, 
+  }
 });
 
-app.use(cors({ origin: "http://localhost:5173" }));
+app.use(cors({ origin: process.env.VITE_FRONTEND_URL || 'http://localhost:5173' }));
 app.use(express.json());
 
 app.get("/", (req, res) => {
