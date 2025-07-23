@@ -1,6 +1,6 @@
 # Spotify-Downloader
 
-![Logo](frontend/public/logo(2).png) <!-- Update path if needed -->
+![Logo](frontend/public/logo.png)
 
 ![Build Status](https://img.shields.io/github/workflow/status/yourusername/Spotify-Downloader/CI)
 ![Test Coverage](https://img.shields.io/codecov/c/github/yourusername/Spotify-Downloader)
@@ -10,7 +10,7 @@
 
 ## Description
 
-Spotify-Downloader is a web application that allows users to download tracks from Spotify playlists as MP3 files. Users can log in with their Spotify account or paste a public playlist URL. The app fetches playlist tracks and provides easy download options.
+Spotify-Downloader is a web application that enables users to download tracks from Spotify playlists as MP3 files. You can log in with your Spotify account to access your playlists, or paste a public playlist URL. The app fetches playlist tracks and provides easy download options, including real-time progress updates.
 
 **Key Features:**
 - Login with Spotify or paste playlist URL
@@ -19,7 +19,7 @@ Spotify-Downloader is a web application that allows users to download tracks fro
 - Real-time download progress
 
 **Purpose:**  
-Solves the problem of downloading Spotify playlist tracks for offline use, making it easy for users to access their favorite music.
+Makes it easy to download Spotify playlist tracks for offline use, solving the hassle of accessing favorite music without an internet connection.
 
 ---
 
@@ -71,13 +71,6 @@ npm run dev
 
 3. **Download:**  
    Select tracks and download as MP3 or ZIP.
-
-**Example:**
-
-```python
-import my_library
-result = my_library.do_something()
-```
 
 **Screenshots:**
 
