@@ -25,9 +25,10 @@ const Navbar = () => {
           <hr className="border-none outline-none h-0.5 bg-[#1db954] w-3/5 m-auto hidden" />
         </NavLink>
       </ul>
-      <button className="hidden bg-[#1db954] text-white py-3 px-4 rounded-full cursor-pointer md:block">
+      {/* <button className="hidden bg-[#1db954] text-white py-3 px-4 rounded-full cursor-pointer md:block">
         Create an Account
-      </button>
+      </button> */}
+      <p className="text-sm text-gray-400">Download Your favorite Playlists</p>
       <div className="md:hidden">
         <MdMenu
           size={40}

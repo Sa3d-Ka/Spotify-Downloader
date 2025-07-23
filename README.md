@@ -1,6 +1,6 @@
 # Spotify-Downloader
 
-![Logo](frontend/public/logo.png)
+![Logo](frontend/public/logo.svg)
 
 ![Build Status](https://img.shields.io/github/workflow/status/yourusername/Spotify-Downloader/CI)
 ![Test Coverage](https://img.shields.io/codecov/c/github/yourusername/Spotify-Downloader)
@@ -75,8 +75,11 @@ npm run dev
 
 **Screenshots:**
 
-![Main UI](frontend/public/screenshot-main.png)
-![Download Progress](frontend/public/screenshot-progress.png)
+![Login Mode](frontend/public/img1.png)
+![URL Mode](frontend/public/img2.png)
+![Playlist Page](frontend/public/img3.png)
+![Tracks Page](frontend/public/img4.png)
+![Download Page](frontend/public/img5.png)
 
 ---
 
@@ -87,7 +90,9 @@ npm run dev
   - `backend/.env`:
     - `SPOTIFY_CLIENT_ID`
     - `SPOTIFY_CLIENT_SECRET`
-    - `FRONTEND_URL`
+    - `SPOTIFY_REDIRECT_URI`
+    - `VITE_FRONTEND_URL`
+    - `PORT`
   - `frontend/.env`:
     - `VITE_BACKEND_URL`
 
