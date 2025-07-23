@@ -1,7 +1,7 @@
 # Spotify-Downloader
 
 <p align="center">
-  <img src="frontend/public/logo.svg" alt="Logo" width="120"/>
+  <img src="frontend/public/logo.svg" alt="Logo" width="160"/>
 </p>
 
 <p align="center">
