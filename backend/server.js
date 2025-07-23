@@ -5,6 +5,7 @@ import cors from "cors";
 import "dotenv/config";
 import urlRoute from "./routes/urlRoute.js";
 import streamRoute from "./routes/streamRoute.js";
+import downloadZipRouter from "./routes/downloadZipRouter.js";
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -24,6 +25,7 @@ app.get("/", (req, res) => {
 // ✅ Use routes
 app.use("/api/playlist", urlRoute);
 app.use("/api/stream", streamRoute(io));
+app.use("/api/download-zip", downloadZipRouter);
 
 server.listen(port, () =>
   console.log("Server Started http://localhost:" + port)

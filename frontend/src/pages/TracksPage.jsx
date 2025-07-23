@@ -1,17 +1,20 @@
 import React, { useEffect, useMemo, useState } from "react";
+import axios from "axios";
 import StepTracker from "../components/StepTracker";
 import { useLocation, useNavigate } from "react-router-dom";
 import { usePlaylistContext } from "../context/PlaylistContext";
 import { IoSearch } from "react-icons/io5";
 import TrackRow from "../components/TrackRow";
 import { MdOutlineFileDownload } from "react-icons/md";
-import { useTracks } from "../context/TracksContext";
+import { ImSpinner8 } from "react-icons/im";
 
 const TracksPage = () => {
   const [searchKeyword, setSearchKeyword] = useState("");
-  const { setTracks } = useTracks();
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
   const location = useLocation();
+
   const id = location.state?.id;
   const { playlists } = usePlaylistContext();
 
@@ -39,15 +42,38 @@ const TracksPage = () => {
     return null;
   }
 
-  const handleDownload = () => {
-    setTracks(tracks)
-    navigate("/download");
+  const downloadZip = async () => {
+    try {
+      setLoading(true); // start loading
+      const response = await axios.post(
+        "http://localhost:4000/api/download-zip",
+        { tracks },
+        {
+          responseType: "blob",
+        }
+      );
+
+      const blob = new Blob([response.data], { type: "application/zip" });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "tracks.zip";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("ZIP download failed:", error);
+      alert("Download failed.");
+    } finally {
+      setLoading(false); // stop loading
+    }
   };
 
   return (
     <div>
       <StepTracker currentStep={2} />
-      <div className="flex flex-col gap-4 md:mx-70">
+      <div className="flex flex-col gap-4 lg:mx-50">
         <div className="flex justify-between">
           <h2 className="font-bold text-2xl">{playlist.name}</h2>
           <p className="text-gray-400 text-sm">
@@ -106,9 +132,13 @@ const TracksPage = () => {
 
         {/* Download All Button */}
         <div className="flex justify-center">
-          <button onClick={handleDownload} className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer">
-            <MdOutlineFileDownload size={20} />
-            <span>Download All Tracks</span>
+          <button
+            onClick={downloadZip}
+            disabled={loading}
+            className="flex items-center gap-2 bg-primary py-2 px-4 rounded-full cursor-pointer"
+          >
+            {loading ? <ImSpinner8 className="animate-spin"/> : <MdOutlineFileDownload size={20} />}
+            <span>{loading ? "Downloading..." : "Download All Tracks"}</span>
           </button>
         </div>
       </div>

@@ -16,7 +16,7 @@ export const trackDownload = (io) => async (req, res) => {
 
     if (!video) return res.status(404).send("Video not found");
 
-    const fileName = sanitize(`${title} - ${artist}.mp3`);
+    const fileName = `${title} - ${artist}.mp3`;
     res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
     res.setHeader("Content-Type", "audio/mpeg");
 

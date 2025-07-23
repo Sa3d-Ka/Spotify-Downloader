@@ -72,7 +72,7 @@ const DownloadPage = () => {
   return (
     <div>
       <StepTracker currentStep={3} />
-      <div className="flex flex-col gap-4 md:mx-70">
+      <div className="flex flex-col gap-4 lg:mx-50">
         <h2 className="font-bold text-2xl">Downloading Tracks</h2>
         {tracks.map((track, index) => (
           <DownloadCard
