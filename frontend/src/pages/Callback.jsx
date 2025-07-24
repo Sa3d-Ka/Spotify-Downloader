@@ -45,10 +45,8 @@ const Callback = () => {
                     headers: { Authorization: `Bearer ${token}` },
                     params: {
                       limit: 20,
-                      fields:
-                        "items(track(id,name,artists(name),album(name,images),is_local))",
+                      timeout: 5000,
                     },
-                    timeout: 5000,
                   });
 
                   playlistData.tracks = tracksRes.data.items
@@ -115,7 +113,9 @@ const Callback = () => {
   return (
     <div className="flex items-center gap-3 justify-center">
       <ImSpinner8 size={20} className="animate-spin" />
-      <span className="text-2xl text-center mt-4">Authenticating with Spotify...</span>
+      <span className="text-2xl text-center mt-4">
+        Authenticating with Spotify...
+      </span>
     </div>
   );
 };
