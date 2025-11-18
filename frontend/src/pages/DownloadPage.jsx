@@ -24,6 +24,7 @@ const DownloadPage = () => {
       navigate("/");
       return;
     }
+    
 
     setProgress(tracks.map(() => 0));
     setCompleted(tracks.map(() => false));

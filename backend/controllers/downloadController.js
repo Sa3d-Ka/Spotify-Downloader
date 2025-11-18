@@ -1,64 +1,70 @@
-import ytdl from "@distube/ytdl-core";
-import ytsr from "@distube/ytsr";
+// import youtubedl from "youtube-dl-exec";
+// import ffmpegPath from "ffmpeg-static";
+// import ytsr from "@distube/ytsr";
 
-// Accept socket instance from router
 export const trackDownload = (io) => async (req, res) => {
-  const { title, artist, socketId, index } = req.query;
+  // const { title, artist, socketId, index } = req.query;
 
-  if (!title || !artist || !socketId || index === undefined) {
-    return res.status(400).send("Missing title, artist, index or socketId");
-  }
+  // if (!title || !artist || !socketId || index === undefined) {
+  //   return res.status(400).send("Missing parameters");
+  // }
 
-  try {
-    const search = await ytsr(`${title} ${artist} song`, { limit: 1 });
-    const video = search.items[0];
+  // try {
+  //   const results = await ytsr(`${title} ${artist} song`, { limit: 5 });
+  //   const video = results.items.find((i) => i.type === "video");
 
-    if (!video) return res.status(404).send("Video not found");
+  //   if (!video) {
+  //     return res.status(404).send("Video not found");
+  //   }
 
-    const fileName = `${title} - ${artist}.mp3`;
-    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-    res.setHeader("Content-Type", "audio/mpeg");
+  //   const fileName = `${title} - ${artist}.mp3`;
+  //   res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+  //   res.setHeader("Content-Type", "audio/mpeg");
 
-    const audioStream = ytdl(video.url, {
-      filter: "audioonly",
-      quality: "highestaudio",
-    });
+  //   const audioStream = ytdl(video.url, {
+  //     filter: "audioonly",
+  //     quality: "highestaudio",
+  //     requestOptions: {
+  //       headers: {
+  //         "User-Agent":
+  //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
+  //       },
+  //     },
+  //   });
 
-    let downloaded = 0;
-    let total = 0;
+  //   audioStream.on("progress", (chunkLength, downloaded, total) => {
+  //     const percent = total ? Math.floor((downloaded / total) * 100) : 0;
 
-    audioStream.on("progress", (chunkLength, downloadedBytes, totalBytes) => {
-      const percent = totalBytes
-        ? Math.floor((downloadedBytes / totalBytes) * 100)
-        : 0;
+  //     io.to(socketId).emit("download-progress", {
+  //       index: Number(index),
+  //       percent,
+  //     });
+  //   });
 
-      io.to(socketId).emit("download-progress", {
-        index: Number(index),
-        percent,
-      });
+  //   audioStream.on("error", (err) => {
+  //     console.error("YTDL error:", err);
 
-      // Optional debug log
-      console.log(`Track ${index}: ${percent}% downloaded`);
-    });
+  //     if (!res.headersSent) {
+  //       res.status(500).send("Stream error");
+  //     }
 
-    audioStream.pipe(res);
+  //     io.to(socketId).emit("download-error", {
+  //       index: Number(index),
+  //       message: err.message,
+  //     });
+  //   });
 
-    audioStream.on("end", () => {
-      io.to(socketId).emit("download-complete", { index: Number(index) });
-    });
+  //   audioStream.on("end", () => {
+  //     io.to(socketId).emit("download-complete", {
+  //       index: Number(index),
+  //     });
+  //   });
 
-    audioStream.on("error", (err) => {
-      io.to(socketId).emit("download-error", {
-        index: Number(index),
-        message: err.message,
-      });
-    });
-  } catch (err) {
-    console.error("Streaming error:", err.message);
-    io.to(socketId).emit("download-error", {
-      index: Number(index),
-      message: err.message,
-    });
-    res.status(500).send("Failed to stream");
-  }
+  //   audioStream.pipe(res);
+  // } catch (err) {
+  //   console.error("Fatal error:", err);
+  //   if (!res.headersSent) {
+  //     res.status(500).send("Failed to stream");
+  //   }
+  // }
 };

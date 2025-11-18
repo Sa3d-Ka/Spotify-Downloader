@@ -25,11 +25,12 @@ const TracksPage = () => {
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword === "") return tracks;
     return tracks.filter((track) =>
-      `${track.title} ${track.artist} ${track.album}`
+      `${track.name} ${track.artists.map(a => a.name).join(" ")} ${track.album.name}`
         .toLowerCase()
         .includes(keyword)
     );
   }, [tracks, searchKeyword]);
+  
 
   useEffect(() => {
     if (!playlists.length || !id || !playlist) {

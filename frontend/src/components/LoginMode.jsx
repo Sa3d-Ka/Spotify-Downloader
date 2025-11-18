@@ -1,15 +1,14 @@
-import React from "react";
+import React, { useState } from "react";
 import { MdLogin } from "react-icons/md";
 
-
 const LoginMode = () => {
-  // const { setPlaylists } = usePlaylistContext();
+  const [isLoading, setIsLoading] = useState(false);
 
-  // const navigate = useNavigate();
-
-  const handleSpotifyLogin = async () => {
-    window.location.href = "http://localhost:4000/api/auth/login";
+  const handleSpotifyLogin = () => {
+    setIsLoading(true);
+    window.location.href = `${import.meta.env.VITE_BACKEND_URL}/api/auth/login`;
   };
+
   return (
     <div className="flex flex-col gap-6">
       <h2 className="text-2xl font-bold text-center">
@@ -22,9 +21,11 @@ const LoginMode = () => {
       <div className="flex flex-col gap-2 items-center">
         <button
           onClick={handleSpotifyLogin}
-          className="flex items-center gap-2.5 bg-primary px-5 py-4 rounded-full cursor-pointer"
+          disabled={isLoading}
+          className="flex items-center gap-2.5 bg-primary px-5 py-4 rounded-full cursor-pointer hover:bg-primary/90 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <MdLogin size={25} /> <span>Login with Spotify</span>
+          <MdLogin size={25} /> 
+          <span>{isLoading ? "Redirecting..." : "Login with Spotify"}</span>
         </button>
         <p className="mt-3 text-xs text-grayMuted">
           We only request read access to your playlists and tracks.

@@ -11,28 +11,11 @@ import Callback from "./pages/Callback";
 import FAQPage from "./pages/FAQPage";
 
 const App = () => {
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const token = urlParams.get("token");
-
-    if (token) {
-      localStorage.setItem("spotify_token", token);
-
-      // Clean the URL (remove token from address bar)
-      window.history.replaceState({}, document.title, "/");
-
-      // Optionally: navigate to your playlist page
-      navigate("/callback");
-    }
-  }, []);
-
   return (
     <div className="min-h-screen bg-darkMedium text-white px-[10px] py-[20px] md:px-[20px] md:py-[30px] lg:px-[140px]">
       <ToastContainer theme="dark" />
       <Navbar />
-      <Routes>
+      {/* <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/how-it-works" element={<HowItWorks />} />
         <Route path="/faq" element={<FAQPage />} />
@@ -40,7 +23,7 @@ const App = () => {
         <Route path="/tracks" element={<TracksPage />} />
         <Route path="/download" element={<DownloadPage />} />
         <Route path="/callback" element={<Callback />} />
-      </Routes>
+      </Routes> */}
     </div>
   );
 };

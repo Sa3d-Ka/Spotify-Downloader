@@ -35,8 +35,7 @@ async function getAccessToken() {
   }
 }
 
-
-const fetchPlaylistFromUrl  = async (req, res) => {
+const fetchPlaylistFromUrl = async (req, res) => {
   const { url } = req.body;
 
   if (!url || !url.includes("open.spotify.com/playlist")) {
@@ -63,29 +62,34 @@ const fetchPlaylistFromUrl  = async (req, res) => {
 
     const playlist = playlistRes.data;
 
-    const responseData = [{
-      id: playlist.id,
-      name: playlist.name,
-      image: playlist.images[0]?.url || null,
-      tracks: playlist.tracks.items.map((item) => ({
-        title: item.track.name,
-        artist: item.track.artists.map((a) => a.name).join(", "),
-        album: item.track.album.name,
-        duration_ms: item.track.duration_ms,
-        image: item.track.album.images[0]?.url || null,
-      })),
-    }];
+    const responseData = [
+      {
+        id: playlist.id,
+        name: playlist.name,
+        image: playlist.images[0]?.url || null,
+        tracks: playlist.tracks.items.map((item) => ({
+          title: item.track.name,
+          artist: item.track.artists.map((a) => a.name).join(", "),
+          album: item.track.album.name,
+          duration_ms: item.track.duration_ms,
+          image: item.track.album.images[0]?.url || null,
+        })),
+      },
+    ];
 
     return res.json(responseData);
   } catch (err) {
     console.error(
       "Spotify playlist fetch error:",
-      err.response?.data || err.message
+      err.response?.status,
+      err.response?.data,
+      err.message
     );
+
     return res
       .status(500)
       .json({ error: "Failed to fetch playlist from Spotify" });
   }
 };
 
-export default fetchPlaylistFromUrl ;
+export default fetchPlaylistFromUrl;

@@ -1,4 +1,5 @@
 import axios from "axios";
+import crypto from "crypto";
 
 const CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
 const REDIRECT_URI = process.env.SPOTIFY_REDIRECT_URI;
@@ -6,27 +7,46 @@ const CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
 const FRONTEND_URL = process.env.VITE_FRONTEND_URL || "http://localhost:5173";
 
 const SCOPES = [
+  "user-read-private",
   "user-read-email",
   "playlist-read-private",
+  "playlist-read-collaborative",
   "user-library-read",
-  "user-read-private",
   "user-top-read",
   // add more scopes as needed
 ].join(" ");
 
+const generateRandomString = (length) => {
+  return crypto.randomBytes(60).toString("hex").slice(0, length);
+};
+
+var stateKey = "spotify_auth_state";
+
 export const loginWithSpotify = (req, res) => {
+  const state = generateRandomString(16);
+  res.cookie(stateKey, state);
+
   const authURL = `https://accounts.spotify.com/authorize?response_type=code&client_id=${CLIENT_ID}&scope=${encodeURIComponent(
     SCOPES
-  )}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}`;
+  )}&redirect_uri=${encodeURIComponent(REDIRECT_URI)}&state=${state}`;
 
   res.redirect(authURL);
 };
 
 export const exchangeSpotifyCode = async (req, res) => {
-  const code = req.query.code;
+  const code = req.query.code || null;
+  const state = req.query.state || null;
+  const storedState = req.cookies ? req.cookies[stateKey] : null;
+
+  if (state === null || state !== storedState) {
+    return res.redirect(`${FRONTEND_URL}?error=state_mismatch`);
+  }
+
   if (!code) return res.status(400).send("Missing code");
 
   try {
+    res.clearCookie(stateKey);
+
     const params = new URLSearchParams();
     params.append("grant_type", "authorization_code");
     params.append("code", code);
@@ -49,21 +69,33 @@ export const exchangeSpotifyCode = async (req, res) => {
 
     const { access_token, refresh_token } = tokenRes.data;
 
-    res.redirect(`${FRONTEND_URL}?token=${access_token}`);
+    // Set HTTP-only cookies (secure, not accessible by JavaScript)
+    res.cookie("spotify_access_token", access_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production", // HTTPS only
+      sameSite: "strict",
+      maxAge: 3600000, // 1 hour
+    });
 
-    // const playlists = await fetchPlaylistWithTracks(access_token);
+    res.cookie("spotify_refresh_token", refresh_token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 30 * 24 * 3600000, // 30 days
+    });
 
-    // return res.json({ access_token, refresh_token, playlists });
+    res.redirect(FRONTEND_URL + '/callback');
   } catch (err) {
     console.error("Token exchange error:", err.response?.data || err.message);
-    res.status(500).send("Authentication failed");
+    res.clearCookie(stateKey);
+    return res.redirect(`${FRONTEND_URL}?error=authentication_failed`);
   }
 };
 
 // const fetchPlaylistWithTracks = async (token) => {
 //   try {
 //     const playlistsRes = await axios.get(
-//       "https://api.spotify.com/v1/me/playlists",
+//       `https://api.spotify.com/v1/me/playlists`,
 //       {
 //         headers: { Authorization: `Bearer ${token}` },
 //         params: { limit: 50 },
