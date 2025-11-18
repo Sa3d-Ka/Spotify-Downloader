@@ -1,70 +1,166 @@
-// import youtubedl from "youtube-dl-exec";
-// import ffmpegPath from "ffmpeg-static";
-// import ytsr from "@distube/ytsr";
+import { exec } from 'child_process';
+import { YouTube } from 'youtube-sr';
+import ffmpegPath from '@ffmpeg-installer/ffmpeg';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const ffmpegLocation = path.dirname(ffmpegPath.path);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
+const tempDir = path.join(__dirname, 'temp');
+if (!fs.existsSync(tempDir)) {
+  fs.mkdirSync(tempDir, { recursive: true });
+}
 
 export const trackDownload = (io) => async (req, res) => {
-  // const { title, artist, socketId, index } = req.query;
+  const { title, artist, socketId, index } = req.query;
 
-  // if (!title || !artist || !socketId || index === undefined) {
-  //   return res.status(400).send("Missing parameters");
-  // }
+  if (!title || !artist || !socketId || index === undefined) {
+    return res.status(400).send("Missing parameters");
+  }
 
-  // try {
-  //   const results = await ytsr(`${title} ${artist} song`, { limit: 5 });
-  //   const video = results.items.find((i) => i.type === "video");
+  try {
+    const searchQuery = `${title} ${artist} official audio`;
+    const videos = await YouTube.search(searchQuery, { limit: 1, type: 'video' });
 
-  //   if (!video) {
-  //     return res.status(404).send("Video not found");
-  //   }
+    if (!videos || videos.length === 0) {
+      io.to(socketId).emit("download-error", {
+        index: Number(index),
+        message: "Video not found"
+      });
+      return res.status(404).send("Video not found");
+    }
 
-  //   const fileName = `${title} - ${artist}.mp3`;
-  //   res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
-  //   res.setHeader("Content-Type", "audio/mpeg");
+    const video = videos[0];
+    const fileName = `${title} - ${artist}.mp3`;
+    const tempFileName = `temp-${Date.now()}-${socketId}-${index}`;
+    const tempFilePath = path.join(tempDir, tempFileName);
+    const videoUrl = `https://www.youtube.com/watch?v=${video.id}`;
 
-  //   const audioStream = ytdl(video.url, {
-  //     filter: "audioonly",
-  //     quality: "highestaudio",
-  //     requestOptions: {
-  //       headers: {
-  //         "User-Agent":
-  //           "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36",
-  //       },
-  //     },
-  //   });
+    // Set response headers
+    res.setHeader("Content-Disposition", `attachment; filename="${fileName}"`);
+    res.setHeader("Content-Type", "audio/mpeg");
 
-  //   audioStream.on("progress", (chunkLength, downloaded, total) => {
-  //     const percent = total ? Math.floor((downloaded / total) * 100) : 0;
+    // Download with yt-dlp and stream progress
+    const downloadCommand = `yt-dlp -x --audio-format mp3 --audio-quality 0 --ffmpeg-location "${ffmpegLocation}" --newline --progress -o "${tempFilePath}.%(ext)s" "${videoUrl}"`;
 
-  //     io.to(socketId).emit("download-progress", {
-  //       index: Number(index),
-  //       percent,
-  //     });
-  //   });
+    const downloadProcess = exec(downloadCommand, { timeout: 120000 });
 
-  //   audioStream.on("error", (err) => {
-  //     console.error("YTDL error:", err);
+    // Track progress from yt-dlp output
+    let lastProgress = 0;
+    downloadProcess.stdout.on('data', (data) => {
+      const output = data.toString();
+      const progressMatch = output.match(/(\d+\.?\d*)%/);
+      
+      if (progressMatch) {
+        const percent = Math.floor(parseFloat(progressMatch[1]));
+        if (percent > lastProgress) {
+          lastProgress = percent;
+          io.to(socketId).emit("download-progress", {
+            index: Number(index),
+            percent
+          });
+        }
+      }
+    });
 
-  //     if (!res.headersSent) {
-  //       res.status(500).send("Stream error");
-  //     }
+    downloadProcess.stderr.on('data', (data) => {
+      const output = data.toString();
+      const progressMatch = output.match(/(\d+\.?\d*)%/);
+      
+      if (progressMatch) {
+        const percent = Math.floor(parseFloat(progressMatch[1]));
+        if (percent > lastProgress) {
+          lastProgress = percent;
+          io.to(socketId).emit("download-progress", {
+            index: Number(index),
+            percent
+          });
+        }
+      }
+    });
 
-  //     io.to(socketId).emit("download-error", {
-  //       index: Number(index),
-  //       message: err.message,
-  //     });
-  //   });
+    downloadProcess.on('error', (err) => {
+      io.to(socketId).emit("download-error", {
+        index: Number(index),
+        message: err.message
+      });
+      if (!res.headersSent) {
+        res.status(500).send("Download failed");
+      }
+    });
 
-  //   audioStream.on("end", () => {
-  //     io.to(socketId).emit("download-complete", {
-  //       index: Number(index),
-  //     });
-  //   });
+    downloadProcess.on('exit', (code) => {
+      if (code === 0) {
+        // Find the downloaded file
+        const files = fs.readdirSync(tempDir).filter(f => f.startsWith(tempFileName));
+        
+        if (files.length === 0) {
+          io.to(socketId).emit("download-error", {
+            index: Number(index),
+            message: "Downloaded file not found"
+          });
+          return res.status(500).send("File not found");
+        }
 
-  //   audioStream.pipe(res);
-  // } catch (err) {
-  //   console.error("Fatal error:", err);
-  //   if (!res.headersSent) {
-  //     res.status(500).send("Failed to stream");
-  //   }
-  // }
+        const downloadedFile = path.join(tempDir, files[0]);
+        const finalPath = `${tempFilePath}.mp3`;
+        
+        // Rename to .mp3 if needed
+        if (downloadedFile !== finalPath) {
+          fs.renameSync(downloadedFile, finalPath);
+        }
+
+        // Stream file to response
+        const fileStream = fs.createReadStream(finalPath);
+        
+        fileStream.on('error', (err) => {
+          io.to(socketId).emit("download-error", {
+            index: Number(index),
+            message: "File stream error"
+          });
+        });
+
+        fileStream.on('end', () => {
+          io.to(socketId).emit("download-complete", {
+            index: Number(index)
+          });
+          
+          // Clean up file after streaming
+          setTimeout(() => {
+            try {
+              if (fs.existsSync(finalPath)) {
+                fs.unlinkSync(finalPath);
+              }
+            } catch (err) {
+              console.error('Cleanup error:', err);
+            }
+          }, 1000);
+        });
+
+        fileStream.pipe(res);
+      } else {
+        io.to(socketId).emit("download-error", {
+          index: Number(index),
+          message: `Download failed with code ${code}`
+        });
+        if (!res.headersSent) {
+          res.status(500).send("Download failed");
+        }
+      }
+    });
+
+  } catch (err) {
+    io.to(socketId).emit("download-error", {
+      index: Number(index),
+      message: err.message
+    });
+    
+    if (!res.headersSent) {
+      res.status(500).send("Failed to download track");
+    }
+  }
 };

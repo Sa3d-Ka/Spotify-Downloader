@@ -33,7 +33,7 @@ const DownloadPage = () => {
       const { name, artists } = track;
 
       // Create the download URL with query params
-      const url = new URL("http://localhost:4000/api/stream");
+      const url = new URL(`${import.meta.env.VITE_BACKEND_URL || "http://localhost:4000"}/api/stream`);
       url.searchParams.append("title", name);
       url.searchParams.append("artist", artists.map(artist => artist.name).join(", "));
       url.searchParams.append("socketId", socket.id);
