@@ -92,56 +92,67 @@ export const exchangeSpotifyCode = async (req, res) => {
   }
 };
 
-// const fetchPlaylistWithTracks = async (token) => {
-//   try {
-//     const playlistsRes = await axios.get(
-//       `https://api.spotify.com/v1/me/playlists`,
-//       {
-//         headers: { Authorization: `Bearer ${token}` },
-//         params: { limit: 50 },
-//       }
-//     );
+export const getAuthStatus = async (req, res) => {
+  try {
+    // Get access token from HTTP-only cookie
+    const access_token = req.cookies.spotify_access_token;
+    
+    if (!access_token) {
+      return res.json({ 
+        isAuthenticated: false,
+        message: "No access token found" 
+      });
+    }
 
-//     const playlistsWithTracks = await Promise.all(
-//       playlistsRes.data.items.map(async (playlist) => {
-//         try {
-//           const tracksRes = await axios.get(playlist.tracks.href, {
-//             headers: { Authorization: `Bearer ${token}` },
-//             params: { limit: 20 },
-//           });
+    // Verify token is still valid by making a simple API call to Spotify
+    const userResponse = await axios.get('https://api.spotify.com/v1/me', {
+      headers: { Authorization: `Bearer ${access_token}` }
+    });
 
-//           return {
-//             id: playlist.id,
-//             name: playlist.name,
-//             image: playlist.images[0]?.url || null,
-//             tracks: tracksRes.data.items.map((item) => ({
-//               id: item.track?.id,
-//               name: item.track?.name,
-//               artists: item.track?.artists?.map((a) => a.name) || [],
-//               album: item.track?.album?.name,
-//               duration_ms: item.track?.duration_ms,
-//               image: item.track?.album?.images?.[0]?.url || null,
-//             })),
-//           };
-//         } catch (trackErr) {
-//           console.error(
-//             `Failed to get tracks for playlist ${playlist.id}:`,
-//             trackErr.message
-//           );
-//           return {
-//             id: playlist.id,
-//             name: playlist.name,
-//             image: playlist.images[0]?.url || null,
-//             tracks: [],
-//             error: "Could not fetch tracks",
-//           };
-//         }
-//       })
-//     );
+    // Token is valid - user is authenticated
+    res.json({ 
+      isAuthenticated: true,
+      user: {
+        id: userResponse.data.id,
+        display_name: userResponse.data.display_name,
+        email: userResponse.data.email,
+        country: userResponse.data.country,
+        product: userResponse.data.product, // premium/free
+        image: userResponse.data.images?.[0]?.url || null
+      }
+    });
 
-//     return playlistsWithTracks;
-//   } catch (err) {
-//     console.error("Spotify API error:", err.response?.data || err.message);
-//     throw err;
-//   }
-// };
+  } catch (error) {
+    console.error("Auth status check error:", error.response?.data || error.message);
+    
+    // Token is invalid/expired - clear cookies
+    res.clearCookie('spotify_access_token');
+    res.clearCookie('spotify_refresh_token');
+    
+    res.json({ 
+      isAuthenticated: false,
+      message: "Token invalid or expired" 
+    });
+  }
+};
+
+
+export const logout = (req, res) => {
+  try {
+    // Clear the HTTP-only cookies
+    res.clearCookie('spotify_access_token');
+    res.clearCookie('spotify_refresh_token');
+    
+    res.json({ 
+      success: true,
+      message: 'Logged out successfully' 
+    });
+    
+  } catch (error) {
+    console.error("Logout error:", error);
+    res.status(500).json({ 
+      success: false,
+      message: 'Logout failed' 
+    });
+  }
+};

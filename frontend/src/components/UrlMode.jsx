@@ -8,7 +8,7 @@ import { usePlaylistContext } from "../context/PlaylistContext";
 
 const UrlMode = () => {
   const [url, setUrl] = useState("");
-  const { setPlaylists } = usePlaylistContext();
+  const { setUrlPlaylists } = usePlaylistContext();
   const navigate = useNavigate();
 
   const handelFetchPlayList = async () => {
@@ -23,11 +23,7 @@ const UrlMode = () => {
         { url }
       );
 
-      setPlaylists(res.data);
-
-      localStorage.setItem("playlists", JSON.stringify(res.data)); // store playlists
-      localStorage.setItem("hasActiveSession", "true"); // mark session as active
-
+      setUrlPlaylists(res.data);
       navigate("/playlist");
     } catch (error) {
       toast.error("Failed to fetch playlist.");

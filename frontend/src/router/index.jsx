@@ -8,6 +8,7 @@ import TracksPage from "../pages/TracksPage";
 import DownloadPage from "../pages/DownloadPage";
 import Callback from "../pages/Callback";
 import NotFound from "../pages/NotFound";
+import ProtectedRoute from "../components/ProtectedRoute";
 
 export const router = createBrowserRouter([
   // Public student routes
@@ -28,15 +29,27 @@ export const router = createBrowserRouter([
       },
       {
         path: "/playlist",
-        element: <PlaylistPage />,
+        element: (
+          <ProtectedRoute>
+            <PlaylistPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/tracks",
-        element: <TracksPage />,
+        element: (
+          <ProtectedRoute>
+            <TracksPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/download",
-        element: <DownloadPage />,
+        element: (
+          <ProtectedRoute>
+            <DownloadPage />
+          </ProtectedRoute>
+        ),
       },
       {
         path: "/callback",
@@ -47,5 +60,5 @@ export const router = createBrowserRouter([
         element: <NotFound />,
       },
     ],
-  }
+  },
 ]);
