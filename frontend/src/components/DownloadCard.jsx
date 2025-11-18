@@ -8,12 +8,12 @@ const DownloadCard = ({ track, percent = 0, completed = false }) => {
         <div className="flex items-center gap-2.5">
           <img
             className="w-14 h-14 rounded"
-            src={track.image || "/fallback.png"}
+            src={track.album.image || "/fallback.png"}
             alt="Cover"
           />
           <div className="flex flex-col gap-1">
-            <span className="font-bold text-md">{track.title}</span>
-            <span className="text-sm text-gray-400">{track.artist}</span>
+            <span className="font-bold text-md">{track.name}</span>
+            <span className="text-sm text-gray-400">{track.artists.map(artist => artist.name).join(", ")}</span>
           </div>
         </div>
         <p>{completed ? "Done" : `${percent || 0}%`}</p>

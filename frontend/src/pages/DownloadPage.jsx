@@ -30,12 +30,12 @@ const DownloadPage = () => {
     setCompleted(tracks.map(() => false));
 
     tracks.forEach((track, index) => {
-      const { title, artist } = track;
+      const { name, artists } = track;
 
       // Create the download URL with query params
       const url = new URL("http://localhost:4000/api/stream");
-      url.searchParams.append("title", title);
-      url.searchParams.append("artist", artist);
+      url.searchParams.append("title", name);
+      url.searchParams.append("artist", artists.map(artist => artist.name).join(", "));
       url.searchParams.append("socketId", socket.id);
       url.searchParams.append("index", index);
 
