@@ -25,12 +25,13 @@ const TracksPage = () => {
     const keyword = searchKeyword.trim().toLowerCase();
     if (keyword === "") return tracks;
     return tracks.filter((track) =>
-      `${track.name} ${track.artists.map(a => a.name).join(" ")} ${track.album.name}`
+      `${track.name} ${track.artists.map((a) => a.name).join(" ")} ${
+        track.album.name
+      }`
         .toLowerCase()
         .includes(keyword)
     );
   }, [tracks, searchKeyword]);
-  
 
   useEffect(() => {
     if (!playlists.length || !id || !playlist) {
@@ -45,16 +46,38 @@ const TracksPage = () => {
 
   const downloadZip = async () => {
     try {
-      setLoading(true); // start loading
+      setLoading(true);
+
+      if (!tracks || tracks.length === 0) {
+        alert("No tracks selected for download");
+        return;
+      }
+
+      console.log("Sending tracks to download:", tracks);
+
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/download-zip`,
         { tracks },
         {
           responseType: "blob",
+          timeout: 300000, // 5 minutes
         }
       );
 
+      // Check if response is JSON error instead of blob
+      const contentType = response.headers["content-type"];
+      if (contentType && contentType.includes("application/json")) {
+        const errorText = await new Response(response.data).text();
+        const errorData = JSON.parse(errorText);
+        throw new Error(errorData.error || "Download failed");
+      }
+
       const blob = new Blob([response.data], { type: "application/zip" });
+
+      if (blob.size === 0) {
+        throw new Error("Received empty file");
+      }
+
       const url = window.URL.createObjectURL(blob);
       const a = document.createElement("a");
       a.href = url;
@@ -63,11 +86,33 @@ const TracksPage = () => {
       a.click();
       a.remove();
       window.URL.revokeObjectURL(url);
+
+      console.log("Download completed successfully");
     } catch (error) {
       console.error("ZIP download failed:", error);
-      alert("Download failed.");
+
+      // Handle blob error responses
+      if (error.response?.data instanceof Blob) {
+        try {
+          const errorText = await new Response(error.response.data).text();
+          const errorData = JSON.parse(errorText);
+          alert(
+            `Download failed: ${errorData.error}\n\nDetails: ${
+              errorData.details?.join("\n") || "Unknown error"
+            }`
+          );
+        } catch {
+          alert("Download failed: Server error");
+        }
+      } else if (error.response?.status === 400) {
+        alert(
+          "Download failed: Could not find or download the requested tracks. Please try different songs."
+        );
+      } else {
+        alert(`Download failed: ${error.message}`);
+      }
     } finally {
-      setLoading(false); // stop loading
+      setLoading(false);
     }
   };
 

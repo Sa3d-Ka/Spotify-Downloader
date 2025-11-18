@@ -51,6 +51,7 @@ const fetchPlaylistFromUrl = async (req, res) => {
   try {
     const token = await getAccessToken();
 
+    // Fetch playlist details
     const playlistRes = await axios.get(
       `https://api.spotify.com/v1/playlists/${playlistId}`,
       {
@@ -62,18 +63,54 @@ const fetchPlaylistFromUrl = async (req, res) => {
 
     const playlist = playlistRes.data;
 
+    // Fetch tracks with more details
+    const tracksRes = await axios.get(
+      `https://api.spotify.com/v1/playlists/${playlistId}/tracks`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        params: {
+          limit: 100,
+          fields:
+            "items(track(id,name,artists,album,duration_ms,preview_url,is_playable))",
+        },
+      }
+    );
+
+    // Format the response to match userPlaylist structure
     const responseData = [
       {
         id: playlist.id,
         name: playlist.name,
+        description: playlist.description || null,
+        owner: playlist.owner?.display_name || "Unknown",
+        public: playlist.public || false,
+        collaborative: playlist.collaborative || false,
+        tracks_count: playlist.tracks?.total || tracksRes.data.total,
         image: playlist.images[0]?.url || null,
-        tracks: playlist.tracks.items.map((item) => ({
-          title: item.track.name,
-          artist: item.track.artists.map((a) => a.name).join(", "),
-          album: item.track.album.name,
-          duration_ms: item.track.duration_ms,
-          image: item.track.album.images[0]?.url || null,
-        })),
+        snapshot_id: playlist.snapshot_id,
+        uri: playlist.uri,
+        href: playlist.href,
+        tracks: tracksRes.data.items
+          .map((item) => ({
+            id: item.track?.id,
+            name: item.track?.name,
+            artists: item.track?.artists?.map((a) => ({
+              id: a.id,
+              name: a.name,
+            })),
+            album: {
+              id: item.track?.album?.id,
+              name: item.track?.album?.name,
+              image: item.track?.album?.images?.[0]?.url || null,
+            },
+            duration_ms: item.track?.duration_ms,
+            preview_url: item.track?.preview_url,
+            is_playable: item.track?.is_playable,
+            uri: item.track?.uri,
+          }))
+          .filter((track) => track.id), // Remove null tracks
       },
     ];
 
@@ -85,6 +122,19 @@ const fetchPlaylistFromUrl = async (req, res) => {
       err.response?.data,
       err.message
     );
+
+    // Handle specific error cases
+    if (err.response?.status === 401) {
+      return res.status(401).json({ error: "Invalid access token" });
+    }
+    if (err.response?.status === 403) {
+      return res
+        .status(403)
+        .json({ error: "Access forbidden - playlist may be private" });
+    }
+    if (err.response?.status === 404) {
+      return res.status(404).json({ error: "Playlist not found" });
+    }
 
     return res
       .status(500)

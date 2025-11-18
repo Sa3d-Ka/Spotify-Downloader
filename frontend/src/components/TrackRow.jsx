@@ -21,7 +21,7 @@ const TrackRow = ({ index, track }) => {
   return (
     <tr className="border-b border-[#212121] hover:bg-[#2a2a2a] transition duration-150">
       <td className="px-4 py-3">{index + 1}</td>
-      <td className="px-4 py-3 whitespace-nowrap overflow-x-scroll">
+      <td className="px-4 py-3 whitespace-nowrap overflow-x-scroll [scrollbar-width:none] [-ms-overflow-style:none]">
         <div className="flex items-center gap-3">
           <img
             src={track.album.image}

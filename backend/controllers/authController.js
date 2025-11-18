@@ -33,12 +33,17 @@ export const loginWithSpotify = (req, res) => {
   res.redirect(authURL);
 };
 
+// In your exchangeSpotifyCode function - add logging
 export const exchangeSpotifyCode = async (req, res) => {
   const code = req.query.code || null;
   const state = req.query.state || null;
   const storedState = req.cookies ? req.cookies[stateKey] : null;
 
+  console.log("🔐 Exchange Spotify Code - Cookies received:", req.cookies);
+  console.log("🔐 State validation:", { state, storedState });
+
   if (state === null || state !== storedState) {
+    console.log("❌ State mismatch");
     return res.redirect(`${FRONTEND_URL}?error=state_mismatch`);
   }
 
@@ -69,90 +74,115 @@ export const exchangeSpotifyCode = async (req, res) => {
 
     const { access_token, refresh_token } = tokenRes.data;
 
-    // Set HTTP-only cookies (secure, not accessible by JavaScript)
+    console.log("✅ Tokens received, setting cookies...");
+
     res.cookie("spotify_access_token", access_token, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production", // HTTPS only
-      sameSite: "strict",
-      maxAge: 3600000, // 1 hour
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "lax", // Use 'lax' instead of 'strict'
+      maxAge: 3600000,
+      domain:
+        process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost", // Explicit domain
+      path: "/", // Explicit path
     });
 
     res.cookie("spotify_refresh_token", refresh_token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 30 * 24 * 3600000, // 30 days
+      sameSite: "lax",
+      maxAge: 30 * 24 * 3600000,
+      domain:
+        process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
+      path: "/",
     });
 
-    res.redirect(FRONTEND_URL + '/callback');
+    console.log(
+      "✅ Cookies set with domain:",
+      process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost"
+    );
+    res.redirect(FRONTEND_URL + "/callback");
   } catch (err) {
-    console.error("Token exchange error:", err.response?.data || err.message);
+    console.error(
+      "❌ Token exchange error:",
+      err.response?.data || err.message
+    );
     res.clearCookie(stateKey);
     return res.redirect(`${FRONTEND_URL}?error=authentication_failed`);
   }
 };
 
+
 export const getAuthStatus = async (req, res) => {
   try {
+    console.log("🔐 Auth Status Check - All cookies:", req.cookies);
+    console.log("🔐 Auth Status Check - Headers:", req.headers);
+
     // Get access token from HTTP-only cookie
     const access_token = req.cookies.spotify_access_token;
-    
+
     if (!access_token) {
-      return res.json({ 
+      console.log("❌ No access token found in cookies");
+      console.log("❌ Available cookies:", Object.keys(req.cookies));
+      return res.json({
         isAuthenticated: false,
-        message: "No access token found" 
+        message: "No access token found",
+        availableCookies: Object.keys(req.cookies),
       });
     }
 
-    // Verify token is still valid by making a simple API call to Spotify
-    const userResponse = await axios.get('https://api.spotify.com/v1/me', {
-      headers: { Authorization: `Bearer ${access_token}` }
+    console.log("✅ Access token found, verifying with Spotify...");
+
+    // Verify token is still valid
+    const userResponse = await axios.get("https://api.spotify.com/v1/me", {
+      headers: { Authorization: `Bearer ${access_token}` },
     });
 
-    // Token is valid - user is authenticated
-    res.json({ 
+    console.log("✅ Token is valid, user:", userResponse.data.id);
+
+    res.json({
       isAuthenticated: true,
       user: {
         id: userResponse.data.id,
         display_name: userResponse.data.display_name,
         email: userResponse.data.email,
         country: userResponse.data.country,
-        product: userResponse.data.product, // premium/free
-        image: userResponse.data.images?.[0]?.url || null
-      }
+        product: userResponse.data.product,
+        image: userResponse.data.images?.[0]?.url || null,
+      },
     });
-
   } catch (error) {
-    console.error("Auth status check error:", error.response?.data || error.message);
-    
+    console.error(
+      "❌ Auth status check error:",
+      error.response?.data || error.message
+    );
+
     // Token is invalid/expired - clear cookies
-    res.clearCookie('spotify_access_token');
-    res.clearCookie('spotify_refresh_token');
-    
-    res.json({ 
+    res.clearCookie("spotify_access_token");
+    res.clearCookie("spotify_refresh_token");
+
+    res.json({
       isAuthenticated: false,
-      message: "Token invalid or expired" 
+      message: "Token invalid or expired",
+      error: error.response?.data || error.message,
     });
   }
 };
 
-
 export const logout = (req, res) => {
   try {
     // Clear the HTTP-only cookies
-    res.clearCookie('spotify_access_token');
-    res.clearCookie('spotify_refresh_token');
-    
-    res.json({ 
+    res.clearCookie("spotify_access_token");
+    res.clearCookie("spotify_refresh_token");
+
+    res.json({
       success: true,
-      message: 'Logged out successfully' 
+      message: "Logged out successfully",
     });
-    
   } catch (error) {
     console.error("Logout error:", error);
-    res.status(500).json({ 
+    res.status(500).json({
       success: false,
-      message: 'Logout failed' 
+      message: "Logout failed",
     });
   }
 };
