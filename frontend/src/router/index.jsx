@@ -1,6 +1,13 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "../layouts/layout";
 import HomePage from "../pages/HomePage";
+import HowItWorks from "../pages/HowItWorks";
+import FAQPage from "../pages/FAQPage";
+import PlaylistPage from "../pages/PlaylistPage";
+import TracksPage from "../pages/TracksPage";
+import DownloadPage from "../pages/DownloadPage";
+import Callback from "../pages/Callback";
+import NotFound from "../pages/NotFound";
 
 export const router = createBrowserRouter([
   // Public student routes

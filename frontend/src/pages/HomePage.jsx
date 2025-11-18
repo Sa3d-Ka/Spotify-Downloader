@@ -2,11 +2,11 @@ import React, { useEffect } from "react";
 import ModeSwitcher from "../components/ModeSwitcher";
 
 const HomePage = () => {
-  useEffect(() => {
-    // Clear session when visiting home
-    localStorage.removeItem("hasActiveSession");
-    localStorage.removeItem("playlists");
-  }, []);
+  // useEffect(() => {
+  //   // Clear session when visiting home
+  //   localStorage.removeItem("hasActiveSession");
+  //   localStorage.removeItem("playlists");
+  // }, []);
 
   return (
     <div className="p-2 md:p-6">
