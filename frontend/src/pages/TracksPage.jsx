@@ -119,7 +119,7 @@ const TracksPage = () => {
   return (
     <div>
       <StepTracker currentStep={2} />
-      <div className="flex flex-col gap-4 lg:mx-50">
+      <div className="flex flex-col gap-4">
         <div className="flex justify-between">
           <h2 className="font-bold text-2xl">{playlist.name}</h2>
           <p className="text-gray-400 text-sm">
