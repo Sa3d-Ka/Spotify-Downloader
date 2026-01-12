@@ -3,7 +3,7 @@ import { MdOutlineFileDownload } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
 import { useTracks } from "../context/TracksContext";
 
-const TrackRow = ({ index, track }) => {
+const TrackRow = ({ index, track, playlistId }) => {
   const navigate = useNavigate();
   const { setTracks } = useTracks();
 
@@ -15,7 +15,7 @@ const TrackRow = ({ index, track }) => {
 
   const handleDownload = () => {
     setTracks([track]);
-    navigate("/download");
+    navigate("/download", { state: { id: playlistId } });
   };
 
   return (

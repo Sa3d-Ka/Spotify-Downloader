@@ -163,6 +163,7 @@ const TracksPage = () => {
                     key={track.id || index}
                     index={index}
                     track={track}
+                    playlistId={id}
                   />
                 ))
               ) : (

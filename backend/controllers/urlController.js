@@ -61,6 +61,9 @@ const fetchPlaylistFromUrl = async (req, res) => {
       }
     );
 
+    console.log(token);
+    
+
     const playlist = playlistRes.data;
 
     // Fetch tracks with more details

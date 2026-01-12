@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { io } from "socket.io-client";
 import DownloadCard from "../components/DownloadCard";
 import StepTracker from "../components/StepTracker";
@@ -15,6 +15,9 @@ const DownloadPage = () => {
   const { tracks } = useTracks();
 
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const id = location.state?.id;
 
   const [progress, setProgress] = useState([]);
   const [completed, setCompleted] = useState([]);
@@ -54,11 +57,13 @@ const DownloadPage = () => {
 
     socket.on("download-complete", ({ index }) => {
       setCompleted((prev) => prev.map((c, i) => (i === index ? true : c)));
+      navigate("/tracks", { state: { id } });
     });
 
     socket.on("download-error", ({ index, message }) => {
       console.error(`Track ${index} Error: ${message}`);
       toast.error(`Track ${index} Error: ${message}`);
+      navigate("/tracks", { state: { id } });
     });
 
     return () => {

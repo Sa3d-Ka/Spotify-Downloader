@@ -1,13 +1,14 @@
 import React from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { FiDownload } from "react-icons/fi";
+import { FiDownload, FiLoader } from "react-icons/fi";
 import { useState } from "react";
 import { toast } from "react-toastify";
 import { usePlaylistContext } from "../context/PlaylistContext";
 
 const UrlMode = () => {
   const [url, setUrl] = useState("");
+  const [loading, setLoading] = useState(false);
   const { setUrlPlaylists } = usePlaylistContext();
   const navigate = useNavigate();
 
@@ -18,6 +19,7 @@ const UrlMode = () => {
     }
 
     try {
+      setLoading(true);
       const res = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/playlist/url`,
         { url }
@@ -28,6 +30,8 @@ const UrlMode = () => {
     } catch (error) {
       toast.error("Failed to fetch playlist.");
       console.error(error);
+    } finally {
+      setLoading(false);
     }
   };
   return (
@@ -50,10 +54,12 @@ const UrlMode = () => {
         />
         <button
           onClick={() => handelFetchPlayList()}
-          className="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-e cursor-pointer"
+          disabled={loading || !url}
+          className="flex items-center gap-1.5 bg-primary text-white px-4 py-2 rounded-e cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          <span>Download</span>
-          <FiDownload />
+          <span>{loading ? "Fetching..." :"Download"}</span>
+          {loading ? <FiLoader className="animate-spin" /> :<FiDownload />}
+          
         </button>
       </div>
     </div>
