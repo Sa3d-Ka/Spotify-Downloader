@@ -28,5 +28,8 @@
     "youtube-mp3-downloader": "^0.7.11",
     "youtube-sr": "^4.3.12",
     "yt-search": "^2.13.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.14"
   }
 }
