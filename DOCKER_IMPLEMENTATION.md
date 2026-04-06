@@ -81,7 +81,6 @@ make up
 
 - ✅ Backend Dockerfile (Node 20 + Express + FFmpeg + yt-dlp + nodemon)
 - ✅ Frontend Dockerfile (Node 20 + Vite with hot-reload)
-- ✅ MongoDB (Alpine variant)
 - ✅ Network bridge for inter-service communication
 - ✅ Volume mounts for live code reloading
 - ✅ Environment configuration
@@ -124,13 +123,6 @@ make up
 - Volume mount: `./frontend:/app`
 - Live development reloading
 - Environment variable: `VITE_API_URL`
-
-### MongoDB (Port 27017)
-
-- Alpine variant for small size
-- Persistent storage with named volume
-- Credentials configurable via .env
-- Data persists between restarts
 
 ### Networking
 
@@ -244,7 +236,6 @@ All installed automatically when container builds.
 - ✅ .dockerignore optimization (reduces build time)
 - ✅ Node modules excluded from volume mounts
 - ✅ Environment variables for sensitive data
-- ✅ Alpine variant for MongoDB (smaller size)
 - ✅ Slim variant for Node.js (smaller base)
 
 ### Production Recommendations
@@ -353,7 +344,6 @@ Your complete Docker environment includes:
 - ✅ Helper scripts for all platforms
 - ✅ Complete documentation
 - ✅ CORS and API client setup
-- ✅ MongoDB integration
 - ✅ Security headers and optimizations
 
 **Run `docker-compose up --build` and your app will be live!**

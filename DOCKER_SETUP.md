@@ -31,11 +31,10 @@ The `--build` flag rebuilds images if `Dockerfile` or dependencies change.
 
 ### 4. Access the Application
 
-| Service     | URL                   | Purpose             |
-| ----------- | --------------------- | ------------------- |
-| Frontend    | http://localhost:5173 | React Vite app      |
-| Backend API | http://localhost:8000 | Express server      |
-| MongoDB     | localhost:27017       | Database (internal) |
+| Service     | URL                   | Purpose        |
+| ----------- | --------------------- | -------------- |
+| Frontend    | http://localhost:5173 | React Vite app |
+| Backend API | http://localhost:8000 | Express server |
 
 ## Services Overview
 
@@ -53,13 +52,6 @@ The `--build` flag rebuilds images if `Dockerfile` or dependencies change.
 - **Hot Reload:** Enabled with nodemon
 - **System Tools:** FFmpeg, Python3, yt-dlp installed
 - **Features:** Music downloading, REST APIs
-
-### MongoDB
-
-- **Port:** 27017
-- **Username:** admin (default, change in .env)
-- **Password:** password (default, change in .env)
-- **Persistence:** Data stored in `mongo-data` volume
 
 ## Common Commands
 
@@ -132,7 +124,7 @@ Both frontend and backend are connected to `spotify-network` bridge network, all
 - Frontend → Frontend container calls: `http://localhost:5173`
 - Backend → Backend container calls: `http://localhost:8000`
 - Frontend → Backend from container: `http://backend:8000`
-- Inside containers: Use service names (backend, mongo) as hostnames
+- Inside containers: Use service names (backend) as hostnames
 
 ## Backend Dockerfile Details
 
@@ -279,6 +271,5 @@ EXPOSE 80
 ## Notes
 
 - All services restart automatically unless stopped
-- MongoDB data persists in `mongo-data` volume
 - Containers share the `spotify-network` bridge network
 - Windows users: File permissions might require WSL2 backend

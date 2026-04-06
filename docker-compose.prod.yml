@@ -16,13 +16,10 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=8000
-      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/spotify-downloader
     volumes:
       # Only mount temp/uploads folders, not entire codebase
       - ./backend/controllers/temp:/app/controllers/temp
       - ./uploads:/app/uploads
-    depends_on:
-      - mongo
     networks:
       - spotify-network
     restart: always
@@ -69,33 +66,6 @@ services:
           cpus: '0.25'
           memory: 128M
 
-  # MongoDB service (production)
-  mongo:
-    image: mongo:7-alpine
-    container_name: spotify-downloader-mongo-prod
-    ports:
-      - "27017:27017"
-    environment:
-      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
-      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
-      - MONGO_INITDB_DATABASE=spotify-downloader
-    volumes:
-      - mongo-data:/data/db
-    networks:
-      - spotify-network
-    restart: always
-    deploy:
-      resources:
-        limits:
-          cpus: '1.0'
-          memory: 1G
-        reservations:
-          cpus: '0.5'
-          memory: 512M
-
 networks:
   spotify-network:
     driver: bridge
-
-volumes:
-  mongo-data:
