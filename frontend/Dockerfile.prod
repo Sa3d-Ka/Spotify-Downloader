@@ -1,0 +1,31 @@
+version: '3.8'
+
+# Production Dockerfile for Frontend with Multi-stage Build
+# File: frontend/Dockerfile.prod
+
+# Build stage
+FROM node:20-slim as builder
+
+WORKDIR /app
+
+COPY package*.json ./
+
+RUN npm install
+
+COPY . .
+
+# Build production bundle
+RUN npm run build
+
+# Production stage - serve with nginx
+FROM nginx:alpine
+
+# Copy built app from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx config
+COPY nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

@@ -1,0 +1,101 @@
+version: '3.8'
+
+# Production Docker Compose Configuration
+# Use: docker-compose -f docker-compose.prod.yml up
+# Note: This is a reference - adjust based on your production needs
+
+services:
+  # Backend service (production)
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.prod
+    container_name: spotify-downloader-backend-prod
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=production
+      - PORT=8000
+      - MONGODB_URI=mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@mongo:27017/spotify-downloader
+    volumes:
+      # Only mount temp/uploads folders, not entire codebase
+      - ./backend/controllers/temp:/app/controllers/temp
+      - ./uploads:/app/uploads
+    depends_on:
+      - mongo
+    networks:
+      - spotify-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+
+  # Frontend service (production - nginx)
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.prod
+    container_name: spotify-downloader-frontend-prod
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - spotify-network
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+        reservations:
+          cpus: '0.25'
+          memory: 128M
+
+  # MongoDB service (production)
+  mongo:
+    image: mongo:7-alpine
+    container_name: spotify-downloader-mongo-prod
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
+      - MONGO_INITDB_DATABASE=spotify-downloader
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - spotify-network
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+networks:
+  spotify-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

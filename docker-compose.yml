@@ -1,0 +1,74 @@
+version: '3.8'
+
+services:
+  # Backend service
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: spotify-downloader-backend
+    ports:
+      - "8000:8000"
+    environment:
+      - NODE_ENV=development
+      - PORT=8000
+      - MONGODB_URI=${MONGODB_URI:-mongodb://mongo:27017/spotify-downloader}
+    volumes:
+      # Mount the entire backend folder for live reload
+      - ./backend:/app
+      # Don't mount node_modules from the host
+      - /app/node_modules
+      # Persist temp files if needed
+      - ./backend/controllers/temp:/app/controllers/temp
+    depends_on:
+      - mongo
+    networks:
+      - spotify-network
+    restart: unless-stopped
+    command: npm run server
+
+  # Frontend service
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: spotify-downloader-frontend
+    ports:
+      - "5173:5173"
+    environment:
+      - VITE_HOST=0.0.0.0
+      - VITE_API_URL=http://backend:8000
+    volumes:
+      # Mount the entire frontend folder for live reload
+      - ./frontend:/app
+      # Don't mount node_modules from the host
+      - /app/node_modules
+    depends_on:
+      - backend
+    networks:
+      - spotify-network
+    restart: unless-stopped
+    command: npm run dev
+
+  # MongoDB service (optional but included)
+  mongo:
+    image: mongo:7-alpine
+    container_name: spotify-downloader-mongo
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME:-admin}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD:-password}
+      - MONGO_INITDB_DATABASE=spotify-downloader
+    volumes:
+      - mongo-data:/data/db
+    networks:
+      - spotify-network
+    restart: unless-stopped
+
+networks:
+  spotify-network:
+    driver: bridge
+
+volumes:
+  mongo-data:

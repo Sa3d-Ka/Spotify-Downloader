@@ -1,0 +1,74 @@
+# Git
+.git
+.gitignore
+.gitattributes
+
+# Dependencies
+node_modules
+npm-debug.log
+yarn-error.log
+package-lock.json
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Build outputs
+dist
+build
+.next
+out
+
+# Logs
+logs
+*.log
+
+# Temporary files
+tmp
+temp
+.tmp
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Docker files
+Dockerfile
+docker-compose*.yml
+.dockerignore
+
+# README and documentation
+README.md
+CHANGELOG.md
+docs
+
+# CI/CD
+.github
+.gitlab-ci.yml
+.circleci
+.travis.yml
+
+# Test files and coverage
+test
+tests
+coverage
+.jest
+.nyc_output
+
+# Misc
+.editorconfig
+.prettierrc
+.eslintrc*
+.babelrc
+webpack.config.js
+tsconfig.json
+rollup.config.js
