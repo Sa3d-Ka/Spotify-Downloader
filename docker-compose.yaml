@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  web:
+    depends_on:
+      - api
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - 5173:5173
+    environment:
+      - VITE_BACKEND_URL=http://localhost:4000
+  
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - 4000:4000
+    environment:
+      - SPOTIFY_CLIENT_ID=5516d157bbf8452bacf578a7f206fe47
+      - SPOTIFY_CLIENT_SECRET=5b574d68526641e08d1b747871a9e023  
+      - SPOTIFY_REDIRECT_URI=http://127.0.0.1:8000/api/auth/callback
+      - VITE_FRONTEND_URL=http://localhost:5173
+      - PORT=4000
+
+volumes:
+  spotify-downloader:
